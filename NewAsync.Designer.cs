@@ -1,6 +1,6 @@
 ﻿namespace Task3_Ado_async
 {
-    partial class Form1
+    partial class NewAsync
     {
         /// <summary>
         ///  Required designer variable.

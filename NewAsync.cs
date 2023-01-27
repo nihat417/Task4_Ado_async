@@ -5,14 +5,14 @@ using System.Windows.Forms;
 
 namespace Task3_Ado_async;
 
-public partial class Form1 : Form
+public partial class NewAsync : Form
 {
     IConfigurationRoot configuration = null;
     SqlConnection? conn = null;
     SqlDataReader? reader = null;
     string ConStr=string.Empty;
     
-    public Form1()
+    public NewAsync()
     {
         InitializeComponent();
         Configure();
