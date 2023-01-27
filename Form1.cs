@@ -30,20 +30,23 @@ public partial class Form1 : Form
         ConStr = configuration.GetConnectionString("ConStr");
     }
 
-    private void AddData()
+    private async void AddData()
     {
         conn = new SqlConnection(ConStr);
 
 
         try
         {
-            conn.Open();
+            await conn.OpenAsync();
             string selcom= "\r\nSELECT NAME\r\nFROM Categories";
-            SqlCommand cmd = new SqlCommand(selcom,conn);
-            reader = cmd.ExecuteReader();
+            SqlCommand cmd=conn.CreateCommand();
+            cmd.CommandText = "WAITFOR DELAY '00:00:05';";
+            cmd.CommandText += selcom;
+            reader =await cmd.ExecuteReaderAsync();
 
-            while (reader.Read())
+            while (await reader.ReadAsync())
             {
+                
                 CategoryCmbx.Items.Add(reader[0]);
             }
             
@@ -55,27 +58,29 @@ public partial class Form1 : Form
         }
         finally
         { 
-            conn?.Close();
-            reader?.Close();
+            conn?.CloseAsync();
+            reader?.CloseAsync();
         }
     }
 
-    private void CategoryCmbx_SelectedIndexChanged(object sender, EventArgs e)
+    private async void CategoryCmbx_SelectedIndexChanged(object sender, EventArgs e)
     {
 
         try
         {
-            conn?.Open();
+            await conn?.OpenAsync();
             string selectedString = @"
                                       Select Authors.FirstName
                                       From Books
                                       JOIN Authors ON Authors.Id=Id_Author
                                       JOIN Categories ON Id_Category=Categories.Id
                                       WHERE Categories.Name=@p1";
-            using SqlCommand cmd = new SqlCommand(selectedString, conn);
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = "WAITFOR DELAY '00:00:05';";
+            cmd.CommandText += selectedString;
             cmd.Parameters.AddWithValue("@p1", CategoryCmbx.SelectedItem.ToString());
-            reader = cmd.ExecuteReader();
-            while (reader.Read())
+            reader =await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
             {
                 AuthorsCmbx.Items.Add(reader[0]);
             }
@@ -87,13 +92,14 @@ public partial class Form1 : Form
         }
         finally
         {
-            conn?.Close();
-            reader?.Close();
+            conn?.CloseAsync();
+            reader?.CloseAsync();
         }
     }
 
     private async void ExecuteBtn_Click(object sender, EventArgs e)
     {
+
         try
         {
             await conn?.OpenAsync();
@@ -151,5 +157,7 @@ public partial class Form1 : Form
             await conn?.CloseAsync();
             await reader?.CloseAsync();
         }
+
+
     }
 }
